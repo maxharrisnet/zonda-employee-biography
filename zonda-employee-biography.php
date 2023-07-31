@@ -14,24 +14,67 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function zonda_register_post_type() {
-  register_post_type( 'zonda_employee', array(
-    'label' => 'Employees',
-    'public' => true 
-  ) );
-}
+  $labels = array(
+    'name'              => _x( 'Employees', 'taxonomy general name', 'zonda' ),
+		'singular_name'     => _x( 'Employee', 'taxonomy singular name', 'zonda' ),
+		'search_items'      => __( 'Search Genres', 'zonda' ),
+		'all_items'         => __( 'All Employees', 'zonda' ),
+		'edit_item'         => __( 'Edit Employee info', 'zonda' ),
+		'update_item'       => __( 'Update Employee info', 'zonda' ),
+		'add_new_item'      => __( 'Add New Employee', 'zonda' ),
+		'new_item_name'     => __( 'New Employee Name', 'zonda' ),
+		'menu_name'         => __( 'Employees', 'zonda' ),
+  );
 
+  $args = array(
+    'labels' =>  $labels,
+    'public' => true
+  );
+
+  register_post_type( 'zonda_employee', $args );
+}
 add_action( 'init', 'zonda_register_post_type' );
+
+
+function zonda_register_taxonomy() {
+  $labels = array(
+    'name'              => _x( 'Division', 'taxonomy general name', 'zonda' ),
+		'singular_name'     => _x( 'Division', 'taxonomy singular name', 'zonda' ),
+		'search_items'      => __( 'Search Division', 'zonda' ),
+		'all_items'         => __( 'All Divisions', 'zonda' ),
+		'edit_item'         => __( 'Edit Division', 'zonda' ),
+		'update_item'       => __( 'Update Division', 'zonda' ),
+		'add_new_item'      => __( 'Add New Division', 'zonda' ),
+		'new_item_name'     => __( 'New Division Name', 'zonda' ),
+		'menu_name'         => __( 'Divisions', 'zonda' ),
+  );
+
+  $args = array(
+    'labels' =>  $labels
+  );
+
+  // Add imaage meta
+
+  register_taxonomy( 'division', 'zonda_employee', $args );
+}
+add_action( 'init', 'zonda_register_taxonomy' );
+
+// function zonda_register_post_meta() {
+
+// }
 
 function zonda_activate() {
   zonda_register_post_type();
   zonda_register_taxonomy();
-  zonda_register_post_meta();
+  // zonda_register_post_meta();
+
+  // zonda_register_shortcode();
 
   flush_rewrite_rules();
 }
 
 function zonda_deactivate() {
-  unregister_post_type('zonda_employee');
+  unregister_post_type( 'zonda_employee' );
   flush_rewrite_rules();
 }
 
