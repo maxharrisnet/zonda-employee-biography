@@ -13,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Include ACF locally
+
 function zonda_register_post_type() {
   $labels = array(
     'name'              => _x( 'Employees', 'taxonomy general name', 'zonda' ),
@@ -28,7 +30,9 @@ function zonda_register_post_type() {
 
   $args = array(
     'labels' =>  $labels,
-    'public' => true
+    'description' => 'A post type for collecting and displaying employee information.',
+    'public' => true,
+    'supports' => array('custom_fields')
   );
 
   register_post_type( 'zonda_employee', $args );
@@ -50,26 +54,139 @@ function zonda_register_taxonomy() {
   );
 
   $args = array(
-    'labels' =>  $labels
+    'labels' =>  $labels,
+    'description' => 'A taxonomy that represents the various divisions in the company in which employees are organized.',
+    'public' => true
   );
 
-  // Add imaage meta
+  // Add image meta
 
   register_taxonomy( 'division', 'zonda_employee', $args );
 }
 add_action( 'init', 'zonda_register_taxonomy' );
 
-// function zonda_register_post_meta() {
+function zonda_register_post_meta_fields() {
+// Register ACF group/fields
+  acf_add_local_field_group(array (
+    'key' => 'employee_information',
+    'title' => 'Employee\'s Biographic Information',
+    'fields' => array(
+      array(
+        'key' => 'first_name',
+        'label' => 'First Name',
+        'name' => 'first_name',
+        'type' => 'text',
+        'maxlength' => '100',
+        'required' => true,
+        'wrapper' => array(
+          'width' => '40%'
+        ),
+      ),
+      array(
+        'key' => 'last_name',
+        'label' => 'Last Name',
+        'name' => 'last_name',
+        'type' => 'text',
+        'maxlength' => '100',
+        'required' => true,
+        'wrapper' => array(
+          'width' => '40%'
+        ),
+      ),
+      array(
+        'key' => 'bio_image',
+        'label' => 'Image',
+        'name' => 'bio_image',
+        'type' => 'image',
+        'instructions' => 'Height/Width 200px >< 1200px File size < 1MB',
+        'instruction_placement' => 'field',
+        'required' => false,
+        'return_format' => 'url',
+        'min_width' => 200,
+        'min_height' => 200,
+        'max_width' => 1200,
+        'max_height' => 1200,
+        'max_size' => '1MB',
+        'wrapper' => array(
+          'width' => '20%'
+        )
+      ),
+      array(
+        'key' => 'position_title',
+        'label' => 'Position',
+        'name' => 'position_title',
+        'type' => 'text',
+        'maxlength' => '100',
+        'required' => true,
+        'wrapper' => array(
+          'width' => '40%'
+        )
+      ),
+      array(
+        'key' => 'division_title',
+        'label' => 'Division',
+        'name' => 'division_title',
+        'type' => 'taxonomy',
+        'taxonomy' => 'division',
+        'field_type' => 'multi_select',
+        'return_format' => 'object',
+        'add_term' => 'false',
+        'required' => true,
+        'wrapper' => array(
+          'width' => '40%'
+        )
+      ),
+      array(
+        'key' => 'start_date',
+        'label' => 'Start Date',
+        'name' => 'start_date',
+        'type' => 'text',
+        'instructions' => 'Please enter the date for the first day of employment for the employee.',
+        'instruction_placement' => 'field',
+        'required' => true,
+        'wrapper' => array(
+          'width' => '20%'
+        )
+      ),
+      array(
+        'key' => 'bio',
+        'label' => 'Bio',
+        'name' => 'bio',
+        'type' => 'textarea',
+        'required' => true,
+        'maxlength' => '100',
+        'new_lines' => 'br',
+        'wrapper' => array(
+          'width' => '100%'
+        ),
+      ),
+    ),
+    'location' => array ( 
+      array (
+        array (
+          'param' => 'post_type',
+          'operator' => '==',
+          'value' => 'zonda_employee'
+        )
+      )
+    )
+  ));
 
+  // Validation and santization
+}
+add_action( 'acf/init', 'zonda_register_post_meta_fields' );
+
+// function zonda_register_shortcode() {
+// Register shortcode
+// Markup for container
+// Markup for employee cards
 // }
 
 function zonda_activate() {
   zonda_register_post_type();
   zonda_register_taxonomy();
-  // zonda_register_post_meta();
-
+  zonda_register_post_meta_fields();
   // zonda_register_shortcode();
-
   flush_rewrite_rules();
 }
 
@@ -81,12 +198,6 @@ function zonda_deactivate() {
 register_activation_hook( __FILE__, 'zonda_activate');
 register_deactivation_hook( __FILE__, 'zonda_deactivate');
 
-
-
-// Register meta fields
-
-// Create inputs
-//  Validation and santization
 
 // Output template (escape)
 
