@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // TODO: Include ACF locally https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
 
+// TODO: Enqueue conditionally according to shortcode presence in content
 function zonda_enqueue_styles() {
   $styles = plugins_url( 'styles.css', __FILE__ );
   wp_enqueue_style( 'zonda-employee-styles', $styles );
@@ -106,7 +107,7 @@ function zonda_register_meta_fields() {
         'instructions' => __('Height/Width 200px >< 1200px File size < 1MB', 'zonda'),
         'instruction_placement' => 'field',
         'required' => false,
-        'return_format' => 'url',
+        'return_format' => 'id',
         'min_width' => 200,
         'min_height' => 200,
         'max_width' => 1200,
@@ -134,7 +135,7 @@ function zonda_register_meta_fields() {
         'name' => 'division_title',
         'type' => 'taxonomy',
         'taxonomy' => 'zonda_division',
-        'field_type' => 'multi_select',
+        'field_type' => 'radio',
         'return_format' => 'object',
         'add_term' => 'false',
         'required' => true,
@@ -160,7 +161,7 @@ function zonda_register_meta_fields() {
         'name' => 'bio',
         'type' => 'textarea',
         'required' => true,
-        'maxlength' => '100',
+        'maxlength' => '1000',
         'new_lines' => 'br',
         'wrapper' => array(
           'width' => '100%'
@@ -253,20 +254,23 @@ function zonda_register_shortcode() {
       while( $employee_query->have_posts() ) { 
         $employee_query->the_post();
 
+        $image = wp_get_attachment_image_src( get_field('bio_image'), 'thumbnail' );
+        $divison = get_field('division_title');
+        
         $output .= '<li class="card">';
-        $output .= '<div class="card-header">';
-        $output .= '<img class="profile-image" src="' . get_field('bio_image') . '" height="80" width="80" />';
-        $output .= '<h3>' . get_field('first_name') . ' ' . get_field('last_name') . '</h3>';
-        $output .= '</div>';
-        $output .= '<div class="card-body">';
-        $output .= '<span>Position: ' . get_field('position_title') . '</span>';
-        $output .= '<span>Division: ' . get_field('division_title') . '</span>';
-        $output .= '<span>Time at company: ' . get_field('start_date') . '</span>';
-        $output .= '</div>';
+        $output .= '<header>';
+        $output .= '<img class="profile-image" src="' . $image[0] . '" alt="' . get_the_title( get_field('bio_image') ) . '" height="62" width="62" />';
+        $output .= '<div><h3>' . get_field('first_name') . ' ' . get_field('last_name') . '</h3>';
+        $output .= '<h4>' . get_field('position_title') . ', ' . $divison->name . '</h4></div>';
+        $output .= '</header>';
+        $output .= '<ul class="card-body">';
+        $output .= '<li><strong>Time at company: ' . '</strong><time>' . get_field('start_date') . '</time></li>';
+        $output .= '<details><summary>Bio</summary><p>' . get_field('bio') . '</p></details>';
+        $output .= '</ul>';
         $output .= '</li>';
       }
       
-      $output .= '<ul>';
+      $output .= '</ul>';
 
     } else {
       $output .= '<strong>No employees found!</strong>';
