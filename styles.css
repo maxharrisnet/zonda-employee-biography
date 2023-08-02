@@ -1,0 +1,42 @@
+.zonda-employees-container {
+  border: 1px solid #8c8c8c;
+  display: flex;
+  flex-flow: wrap;
+  gap: 5px;
+  padding: 15px;
+}
+
+.card-container {
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  border: 1px solid #8c8c8c;
+  border-radius: 15px;
+  display: block;
+  margin: 0;
+  padding: 15px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.card-body {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.profile-image {
+  border-radius: 50%;
+  height: 80px;
+  width: 80px;
+}
+
+.card h3 {
+  margin: 0;
+}

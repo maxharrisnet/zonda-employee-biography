@@ -15,6 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // TODO: Include ACF locally https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
 
+function zonda_enqueue_styles() {
+  $styles = plugins_url( 'styles.css', __FILE__ );
+  wp_enqueue_style( 'zonda-employee-styles', $styles );
+}
+add_action( 'wp_enqueue_scripts', 'zonda_enqueue_styles' );
+
 function zonda_register_post_type() {
   $labels = array(
     'name'              => _x( 'Employees', 'taxonomy general name', 'zonda' ),
@@ -226,8 +232,8 @@ function zonda_register_shortcode() {
     $atts = array_change_key_case( (array) $atts, CASE_LOWER );
     // Setting the acceptable attribute pairs
     extract(shortcode_atts(array (
-      ids => [],
-      divisions => []
+      'ids' => [],
+      'divisions' => []
     ), $atts));
     
     $args = array (
@@ -238,26 +244,37 @@ function zonda_register_shortcode() {
     );
 
     // TODO: Add a `tax_query` to args for searching by department 
-
-    $employees = get_posts($args);
     $output = '<section class="zonda-employees-container">';
-    $output .= 'Bingo! ' . $ids;
+    $employee_query = new WP_Query( $args );
 
-    // Loop through employees
-    if( $employees ) {
-      foreach( $employees as $e ) {
+    if( $employee_query->have_posts() ) {
+      $output .= '<ul class="card-container">';
 
-        setup_postdata( $e );
+      while( $employee_query->have_posts() ) { 
+        $employee_query->the_post();
 
-        // Cards
-        $output .= '<div>';
-        $output .= '<h3>#' . the_field('first_name') . ' ' . the_field('last_name') . '</h3>';
+        $output .= '<li class="card">';
+        $output .= '<div class="card-header">';
+        $output .= '<img class="profile-image" src="' . get_field('bio_image') . '" height="80" width="80" />';
+        $output .= '<h3>' . get_field('first_name') . ' ' . get_field('last_name') . '</h3>';
         $output .= '</div>';
+        $output .= '<div class="card-body">';
+        $output .= '<span>Position: ' . get_field('position_title') . '</span>';
+        $output .= '<span>Division: ' . get_field('division_title') . '</span>';
+        $output .= '<span>Time at company: ' . get_field('start_date') . '</span>';
+        $output .= '</div>';
+        $output .= '</li>';
       }
+      
+      $output .= '<ul>';
+
+    } else {
+      $output .= '<strong>No employees found!</strong>';
     }
+
     $output .= '</section>';
     
-    wp_reset_postdata();
+    wp_reset_query();
 
     return $output;
   }
@@ -267,6 +284,7 @@ function zonda_register_shortcode() {
 add_action( 'init', 'zonda_register_shortcode' );
 
 function zonda_activate() {
+  zonda_enqueue_styles();
   zonda_register_post_type();
   zonda_register_taxonomy();
   zonda_register_meta_fields();
