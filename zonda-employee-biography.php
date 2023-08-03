@@ -24,21 +24,22 @@ add_action( 'wp_enqueue_scripts', 'zonda_enqueue_styles' );
 
 function zonda_register_post_type() {
   $labels = array(
-    'name'              => _x( 'Employees', 'taxonomy general name', 'zonda' ),
-		'singular_name'     => _x( 'Employee', 'taxonomy singular name', 'zonda' ),
-		'search_items'      => __( 'Search Genres', 'zonda' ),
-		'all_items'         => __( 'All Employees', 'zonda' ),
-		'edit_item'         => __( 'Edit Employee info', 'zonda' ),
-		'update_item'       => __( 'Update Employee info', 'zonda' ),
-		'add_new_item'      => __( 'Add New Employee', 'zonda' ),
-		'new_item_name'     => __( 'New Employee Name', 'zonda' ),
-		'menu_name'         => __( 'Employees', 'zonda' ),
+    'name'              => esc_html_x( 'Employees', 'taxonomy general name', 'zonda' ),
+		'singular_name'     => esc_html_x( 'Employee', 'taxonomy singular name', 'zonda' ),
+		'search_items'      => esc_html__( 'Search Genres', 'zonda' ),
+		'all_items'         => esc_html__( 'All Employees', 'zonda' ),
+		'edit_item'         => esc_html__( 'Edit Employee info', 'zonda' ),
+		'update_item'       => esc_html__( 'Update Employee info', 'zonda' ),
+		'add_new_item'      => esc_html__( 'Add New Employee', 'zonda' ),
+		'new_item_name'     => esc_html__( 'New Employee Name', 'zonda' ),
+		'menu_name'         => esc_html__( 'Employees', 'zonda' ),
   );
 
   $args = array(
     'labels' =>  $labels,
-    'description' => __('A post type for collecting and displaying employee information.', 'zonda'),
+    'description' => esc_html__('A post type for collecting and displaying employee information.', 'zonda'),
     'public' => true,
+    'show_in_rest' => false, // Intentionally excluding sensitive employee information from the REST API
     'supports' => array('custom_fields')
   );
 
@@ -46,24 +47,24 @@ function zonda_register_post_type() {
 }
 add_action( 'init', 'zonda_register_post_type' );
 
-
 function zonda_register_taxonomy() {
   $labels = array(
-    'name'              => _x( 'Division', 'taxonomy general name', 'zonda' ),
-		'singular_name'     => _x( 'Division', 'taxonomy singular name', 'zonda' ),
-		'search_items'      => __( 'Search Division', 'zonda' ),
-		'all_items'         => __( 'All Divisions', 'zonda' ),
-		'edit_item'         => __( 'Edit Division', 'zonda' ),
-		'update_item'       => __( 'Update Division', 'zonda' ),
-		'add_new_item'      => __( 'Add New Division', 'zonda' ),
-		'new_item_name'     => __( 'New Division Name', 'zonda' ),
-		'menu_name'         => __( 'Divisions', 'zonda' ),
+    'name'              => esc_html_x( 'Division', 'taxonomy general name', 'zonda' ),
+		'singular_name'     => esc_html_x( 'Division', 'taxonomy singular name', 'zonda' ),
+		'search_items'      => esc_html__( 'Search Division', 'zonda' ),
+		'all_items'         => esc_html__( 'All Divisions', 'zonda' ),
+		'edit_item'         => esc_html__( 'Edit Division', 'zonda' ),
+		'update_item'       => esc_html__( 'Update Division', 'zonda' ),
+		'add_new_item'      => esc_html__( 'Add New Division', 'zonda' ),
+		'new_item_name'     => esc_html__( 'New Division Name', 'zonda' ),
+		'menu_name'         => esc_html__( 'Divisions', 'zonda' ),
   );
 
   $args = array(
     'labels' =>  $labels,
-    'description' => __('A taxonomy that represents the various divisions in the company in which employees are organized.', 'zonda'),
+    'description' => esc_html__('A taxonomy that represents the various divisions in the company in which employees are organized.', 'zonda'),
     'public' => true,
+    'show_in_rest' => false,
     'meta_box_cb' => false,
 
   );
@@ -75,11 +76,11 @@ add_action( 'init', 'zonda_register_taxonomy' );
 function zonda_register_meta_fields() {
   acf_add_local_field_group(array (
     'key' => 'employee_information',
-    'title' => __('Employee\'s Biographic Information', 'zonda'),
+    'title' => esc_html__('Employee\'s Biographic Information', 'zonda'),
     'fields' => array(
       array(
         'key' => 'first_name',
-        'label' => __('First Name', 'zonda'),
+        'label' => esc_html__('First Name', 'zonda'),
         'name' => 'first_name',
         'type' => 'text',
         'maxlength' => '100',
@@ -90,7 +91,7 @@ function zonda_register_meta_fields() {
       ),
       array(
         'key' => 'last_name',
-        'label' => __('Last Name', 'zonda'),
+        'label' => esc_html__('Last Name', 'zonda'),
         'name' => 'last_name',
         'type' => 'text',
         'maxlength' => '100',
@@ -101,10 +102,10 @@ function zonda_register_meta_fields() {
       ),
       array(
         'key' => 'bio_image',
-        'label' => __('Image', 'zonda'),
+        'label' => esc_html__('Image', 'zonda'),
         'name' => 'bio_image',
         'type' => 'image',
-        'instructions' => __('Height/Width 200px >< 1200px File size < 1MB', 'zonda'),
+        'instructions' => esc_html__('Height/Width 200px >< 1200px File size < 1MB', 'zonda'),
         'instruction_placement' => 'field',
         'required' => false,
         'return_format' => 'id',
@@ -120,7 +121,7 @@ function zonda_register_meta_fields() {
       ),
       array(
         'key' => 'position_title',
-        'label' => __('Position', 'zonda'),
+        'label' => esc_html__('Position', 'zonda'),
         'name' => 'position_title',
         'type' => 'text',
         'maxlength' => '100',
@@ -131,7 +132,7 @@ function zonda_register_meta_fields() {
       ),
       array(
         'key' => 'division_title',
-        'label' => __('Division', 'zonda'),
+        'label' => esc_html__('Division', 'zonda'),
         'name' => 'division_title',
         'type' => 'taxonomy',
         'taxonomy' => 'zonda_division',
@@ -145,10 +146,10 @@ function zonda_register_meta_fields() {
       ),
       array(
         'key' => 'start_date',
-        'label' => __('Start Date', 'zonda'),
+        'label' => esc_html__('Start Date', 'zonda'),
         'name' => 'start_date',
         'type' => 'text',
-        'instructions' => __('Please enter the date for the first day of employment for the employee.', 'zonda'),
+        'instructions' => esc_html__('Please enter the date for the first day of employment for the employee.', 'zonda'),
         'instruction_placement' => 'field',
         'required' => true,
         'wrapper' => array(
@@ -157,7 +158,7 @@ function zonda_register_meta_fields() {
       ),
       array(
         'key' => 'bio',
-        'label' => __('Bio', 'zonda'),
+        'label' => esc_html__('Bio', 'zonda'),
         'name' => 'bio',
         'type' => 'textarea',
         'required' => true,
@@ -172,7 +173,7 @@ function zonda_register_meta_fields() {
       array (
         array (
           'param' => 'post_type',
-          'operator' => '==',
+          'operator' => '===',
           'value' => 'zonda_employee'
         )
       )
@@ -188,14 +189,14 @@ function zonda_register_meta_fields() {
 
   acf_add_local_field_group(array (
     'key' => 'division_information',
-    'title' => __('Information regarding company divisions', 'zonda'),
+    'title' => esc_html__('Information regarding company divisions', 'zonda'),
     'fields' => array(
       array(
         'key' => 'division_image',
-        'label' => __('Image', 'zonda'),
+        'label' => esc_html__('Image', 'zonda'),
         'name' => 'division_image',
         'type' => 'image',
-        'instructions' => __('Height/Width 200px >< 600px File size < 1MB', 'zonda'),
+        'instructions' => esc_html__('Height/Width 200px >< 600px File size < 1MB', 'zonda'),
         'instruction_placement' => 'field',
         'required' => false,
         'return_format' => 'url',
@@ -225,9 +226,50 @@ function zonda_register_meta_fields() {
 }
 add_action( 'acf/init', 'zonda_register_meta_fields' );
 
-function zonda_register_shortcode() {
-// Register shortcode
+function zonda_filter_culumns( $columns ) {
+  $columns = array(
+    'cb' => $columns['cb'],
+    'first_name' => esc_html__( 'First Name', 'zonda' ), 
+    'last_name' => esc_html__( 'Last Name', 'zonda' ), 
+    'position_title' => esc_html__( 'Position', 'zonda' ),
+    'division_title' => esc_html__( 'Division', 'zonda' ),
+  );
 
+  return $columns;
+}
+add_action( 'manage_zonda_employee_posts_columns', 'zonda_filter_culumns' );
+
+function zonda_populate_columns( $column, $post_id ) {
+  $divisions = get_terms( array(
+    'taxonomy' => 'zonda_division'
+   ) );
+   
+  if ( 'first_name' === $column ) {
+    echo (get_post_meta( $post_id, 'first_name', true ));
+  }
+  if ( 'last_name' === $column ) {
+    echo (get_post_meta( $post_id, 'last_name', true ));
+  }
+  if ( 'position_title' === $column ) {
+    echo (get_post_meta( $post_id, 'position_title', true ));
+  }
+  if ( 'division_title' === $column ) {
+    var_dump($divisions);
+
+    if ( !empty($divisions) ) {
+      echo '?';
+
+      foreach ( $divisions as $division ) {
+        echo ('Bing');
+        _e( $division->name );
+      }
+    }
+  }
+}
+add_action( 'manage_zonda_employee_posts_custom_column', 'zonda_populate_columns', 10, 2 );
+
+
+function zonda_register_shortcode() {
   function zonda_employee_biography_template( $atts ) {
     // Normalizing key case
     $atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -236,22 +278,29 @@ function zonda_register_shortcode() {
       'ids' => [],
       'divisions' => []
     ), $atts));
-    
+
+    // Converting the ids string to an array
+    // array_filter gives us an empty array if there are no values, which causes the query to return all posts
+    $ids = array_filter( explode( ',', $atts['ids'] ));
+
     $args = array (
       'post_type' => 'zonda_employee',
+      'post_status' => 'publish',
       'numberposts' => -1,
-      'include' => $atts['ids'],
+      'post__in' => $ids,
       'suppress_filters' => false
     );
 
-    // TODO: Add a `tax_query` to args for searching by department 
-    $output = '<section class="zonda-employees-container">';
     $employee_query = new WP_Query( $args );
+
+    var_dump(get_post_meta($post_id));
+
+    $output = '<section class="zonda-employees-container">';
 
     if( $employee_query->have_posts() ) {
       $output .= '<ul class="card-container">';
 
-      while( $employee_query->have_posts() ) { 
+      while( $employee_query->have_posts() ) {
         $employee_query->the_post();
 
         $image = wp_get_attachment_image_src( get_field('bio_image'), 'thumbnail' );
@@ -259,13 +308,13 @@ function zonda_register_shortcode() {
         
         $output .= '<li class="card">';
         $output .= '<header>';
-        $output .= '<img class="profile-image" src="' . $image[0] . '" alt="' . get_the_title( get_field('bio_image') ) . '" height="62" width="62" />';
-        $output .= '<div><h3>' . get_field('first_name') . ' ' . get_field('last_name') . '</h3>';
-        $output .= '<h4>' . get_field('position_title') . ', ' . $divison->name . '</h4></div>';
+        $output .= '<img class="profile-image" src="' . esc_url($image[0]) . '" alt="' . esc_attr(get_the_title( get_field('bio_image') )) . '" height="62" width="62" />';
+        $output .= '<div><h3>' . esc_html(get_field('first_name')) . ' ' . esc_html(get_field('last_name')) . '</h3>'; // Not escaping these because they are proper nouns
+        $output .= '<h4>' . esc_html__(get_field('position_title')) . ', ' . esc_html__($divison->name) . '</h4></div>';
         $output .= '</header>';
         $output .= '<ul class="card-body">';
-        $output .= '<li><strong>Time at company: ' . '</strong><time>' . get_field('start_date') . '</time></li>';
-        $output .= '<details><summary>Bio</summary><p>' . get_field('bio') . '</p></details>';
+        $output .= '<li><strong>Time at company: ' . '</strong><time>' . esc_html(get_field('start_date')) . '</time></li>';
+        $output .= '<details><summary>Bio</summary><p>' . esc_html(get_field('bio')) . '</p></details>';
         $output .= '</ul>';
         $output .= '</li>';
       }
@@ -274,13 +323,14 @@ function zonda_register_shortcode() {
 
     } else {
       $output .= '<strong>No employees found!</strong>';
+      $output .= '<p>Please see the <a href="https://github.com/maxharrisnet/zonda-employee-biography#readme" target="_blank">README</a> for instructions on how to use the plugin<br>';
     }
 
     $output .= '</section>';
     
     wp_reset_query();
 
-    return $output;
+    return wp_kses_post($output);
   }
 
   add_shortcode( 'zonda_employee_biography', 'zonda_employee_biography_template' );
@@ -302,8 +352,6 @@ function zonda_deactivate() {
   flush_rewrite_rules();
 }
 register_deactivation_hook( __FILE__, 'zonda_deactivate');
-
-// Remove shortcode on deactivation?
 
 // [] Field validation
 // [] Sanitization
