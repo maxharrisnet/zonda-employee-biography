@@ -105,7 +105,7 @@ function zonda_register_meta_fields() {
         'label' => esc_html__('Image', 'zonda'),
         'name' => 'bio_image',
         'type' => 'image',
-        'instructions' => esc_html__('Height/Width 200px >< 1200px File size < 1MB', 'zonda'),
+        'instructions' => esc_html__('Image height/width must be between 200px - 1200px. File size must be under 1MB.', 'zonda'),
         'instruction_placement' => 'field',
         'required' => false,
         'return_format' => 'id',
@@ -136,6 +136,7 @@ function zonda_register_meta_fields() {
         'name' => 'division_title',
         'type' => 'taxonomy',
         'taxonomy' => 'zonda_division',
+        'load_save_terms' => 1,
         'field_type' => 'radio',
         'return_format' => 'object',
         'add_term' => 'false',
@@ -145,10 +146,11 @@ function zonda_register_meta_fields() {
         )
       ),
       array(
-        'key' => 'start_date',
+        'key'   => 'start_date',
         'label' => esc_html__('Start Date', 'zonda'),
-        'name' => 'start_date',
-        'type' => 'text',
+        'name'  => 'start_date',
+        'type'  => 'date_picker',
+        'display_format' => 'm-d-Y',
         'instructions' => esc_html__('Please enter the date for the first day of employment for the employee.', 'zonda'),
         'instruction_placement' => 'field',
         'required' => true,
@@ -196,10 +198,10 @@ function zonda_register_meta_fields() {
         'label' => esc_html__('Image', 'zonda'),
         'name' => 'division_image',
         'type' => 'image',
-        'instructions' => esc_html__('Height/Width 200px >< 600px File size < 1MB', 'zonda'),
+        'instructions' => esc_html__('Image height/width must be between 200px - 600px. File size must be under 1MB.', 'zonda'),
         'instruction_placement' => 'field',
         'required' => false,
-        'return_format' => 'url',
+        'return_format' => 'id',
         'min_width' => 200,
         'min_height' => 200,
         'max_width' => 600,
@@ -233,6 +235,8 @@ function zonda_filter_culumns( $columns ) {
     'last_name' => esc_html__( 'Last Name', 'zonda' ), 
     'position_title' => esc_html__( 'Position', 'zonda' ),
     'division_title' => esc_html__( 'Division', 'zonda' ),
+    'bio_image' => 'Image',
+    'date' => 'Status'
   );
 
   return $columns;
@@ -243,31 +247,40 @@ function zonda_populate_columns( $column, $post_id ) {
   $divisions = get_terms( array(
     'taxonomy' => 'zonda_division'
    ) );
-   
+
   if ( 'first_name' === $column ) {
-    echo (get_post_meta( $post_id, 'first_name', true ));
+    esc_html(_e(get_post_meta( $post_id, 'first_name', true ), 'zonda' ));
   }
   if ( 'last_name' === $column ) {
-    echo (get_post_meta( $post_id, 'last_name', true ));
+    esc_html(_e(get_post_meta( $post_id, 'last_name', true ), 'zonda' ));
   }
   if ( 'position_title' === $column ) {
-    echo (get_post_meta( $post_id, 'position_title', true ));
+    esc_html(_e(get_post_meta( $post_id, 'position_title', true ), 'zonda' ));
   }
   if ( 'division_title' === $column ) {
-    var_dump($divisions);
-
     if ( !empty($divisions) ) {
-      echo '?';
-
       foreach ( $divisions as $division ) {
-        echo ('Bing');
-        _e( $division->name );
+        esc_html(_e( $division->name, 'zonda' ));
       }
     }
   }
+  if ( 'bio_image' === $column ) {
+    $image = wp_get_attachment_image_src( get_field('bio_image'), 'thumbnail' );
+    if ( !empty($image) ) {
+      esc_html(_e('<img class="profile-image" src="' . esc_url($image[0]) . '" alt="A photo of ' . esc_attr($fn) . ' ' . esc_attr($ln) . '" height="40" width="40" style="border-radius: 50%;  border: 1px solid #ccc;" />', 'zonda' ));
+    }
+  }   
 }
 add_action( 'manage_zonda_employee_posts_custom_column', 'zonda_populate_columns', 10, 2 );
 
+function zonda_get_time_at_company() {
+  $start_string = get_field('start_date');
+  $start = DateTime::createFromFormat( 'm#d#Y', $start_string );
+  $now = new DateTime();
+  $duration = $now->diff($start);
+  
+  return $duration->format( '%y years %m months' );
+}
 
 function zonda_register_shortcode() {
   function zonda_employee_biography_template( $atts ) {
@@ -293,8 +306,6 @@ function zonda_register_shortcode() {
 
     $employee_query = new WP_Query( $args );
 
-    var_dump(get_post_meta($post_id));
-
     $output = '<section class="zonda-employees-container">';
 
     if( $employee_query->have_posts() ) {
@@ -303,19 +314,22 @@ function zonda_register_shortcode() {
       while( $employee_query->have_posts() ) {
         $employee_query->the_post();
 
+        $fn = get_field('first_name');
+        $ln = get_field('last_name');
         $image = wp_get_attachment_image_src( get_field('bio_image'), 'thumbnail' );
         $divison = get_field('division_title');
         
         $output .= '<li class="card">';
         $output .= '<header>';
-        $output .= '<img class="profile-image" src="' . esc_url($image[0]) . '" alt="' . esc_attr(get_the_title( get_field('bio_image') )) . '" height="62" width="62" />';
-        $output .= '<div><h3>' . esc_html(get_field('first_name')) . ' ' . esc_html(get_field('last_name')) . '</h3>'; // Not escaping these because they are proper nouns
+        $output .= '<img class="profile-image" src="' . esc_url($image[0]) . '" alt="A photo of ' . esc_attr($fn) . ' ' . esc_attr($ln) . '" height="62" width="62" />';
+        $output .= '<div><h3>' . esc_html($fn) . ' ' . esc_html($ln) . '</h3>'; // Not escaping these because they are proper nouns
         $output .= '<h4>' . esc_html__(get_field('position_title')) . ', ' . esc_html__($divison->name) . '</h4></div>';
         $output .= '</header>';
-        $output .= '<ul class="card-body">';
-        $output .= '<li><strong>Time at company: ' . '</strong><time>' . esc_html(get_field('start_date')) . '</time></li>';
-        $output .= '<details><summary>Bio</summary><p>' . esc_html(get_field('bio')) . '</p></details>';
-        $output .= '</ul>';
+        $output .= '<details>';
+        $output .= '<summary>Bio</summary>';
+        $output .= '<p>' . esc_html(get_field('bio')) . '</p>';
+        $output .= '<em>' . $fn . ' has been at the company for ' . '<time>' .  esc_html(zonda_get_time_at_company()) . '</time></em>';
+        $output .= '</details>';
         $output .= '</li>';
       }
       
