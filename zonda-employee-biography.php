@@ -66,7 +66,6 @@ function zonda_register_taxonomy() {
     'public' => true,
     'show_in_rest' => false,
     'meta_box_cb' => false,
-
   );
 
   register_taxonomy( 'zonda_division', 'zonda_employee', $args );
@@ -223,8 +222,6 @@ function zonda_register_meta_fields() {
       )
     )
   ));
-
-  // TODO: limit division entries to Admin users only
 }
 add_action( 'acf/init', 'zonda_register_meta_fields' );
 
@@ -244,9 +241,7 @@ function zonda_filter_culumns( $columns ) {
 add_action( 'manage_zonda_employee_posts_columns', 'zonda_filter_culumns' );
 
 function zonda_populate_columns( $column, $post_id ) {
-  $divisions = get_terms( array(
-    'taxonomy' => 'zonda_division'
-   ) );
+  $divisions = get_the_terms( $post_id, 'zonda_division' );
 
   if ( 'first_name' === $column ) {
     esc_html(_e(get_post_meta( $post_id, 'first_name', true ), 'zonda' ));
@@ -317,13 +312,13 @@ function zonda_register_shortcode() {
         $fn = get_field('first_name');
         $ln = get_field('last_name');
         $image = wp_get_attachment_image_src( get_field('bio_image'), 'thumbnail' );
-        $divison = get_field('division_title');
+        $divison = get_the_terms( $post_id, 'zonda_division' );
         
         $output .= '<li class="card">';
         $output .= '<header>';
         $output .= '<img class="profile-image" src="' . esc_url($image[0]) . '" alt="A photo of ' . esc_attr($fn) . ' ' . esc_attr($ln) . '" height="62" width="62" />';
         $output .= '<div><h3>' . esc_html($fn) . ' ' . esc_html($ln) . '</h3>'; // Not escaping these because they are proper nouns
-        $output .= '<h4>' . esc_html__(get_field('position_title')) . ', ' . esc_html__($divison->name) . '</h4></div>';
+        $output .= '<h4>' . esc_html__(get_field('position_title')) . ', ' . esc_html__($divison[0]->name) . '</h4></div>';
         $output .= '</header>';
         $output .= '<details>';
         $output .= '<summary>Bio</summary>';
