@@ -92,7 +92,6 @@
             'max_width' => 1300,
             'max_height' => 1300,
             'max_size' => '1MB',
-            // 'mime_types' => 'image/jpeg, image/pjpeg, image/png, image/webp', // TODO: Add webp to WordPress MIME types https://www.isitwp.com/modify-allowed-upload-mime-types/
             'wrapper' => array(
               'width' => '20%'
             )
@@ -165,8 +164,6 @@
       * https://pluginrepublic.com/add-acf-fields-to-admin-columns/
       */
 
-      // TODO: use site title for comapny name in admin screen
-
       acf_add_local_field_group(array (
         'key' => 'division_information',
         'title' => esc_html__('Information regarding company divisions', 'zonda'),
@@ -220,7 +217,7 @@
     * Can contain letters, spaces, dashes, and apostrophes anywhere within the name, but no underscores.
     */
 
-    if( !preg_match("^(?!.*\W{2})[a-zA-Z][a-zA-Z\s'-]*[a-zA-Z]$", $value) ) {
+    if( !preg_match("/^(?!.*\W{2})[a-zA-Z][a-zA-Z\s'-]*[a-zA-Z]$/", $value) ) {
       $valid = esc_html__('Name must only contain alphabetical characters.', 'zonda');
     }
 
@@ -290,9 +287,9 @@
       $valid = esc_html__('Start date must be in the past.', 'zonda');
     }
     
-    if ( !wp_checkdate( $value->format('m'), $value->format('d'), $value->format('Y') ) ) {
-      $valid = esc_html__('Start date must be a valid date.', 'zonda');
-    }
+    // if ( !wp_checkdate( $value->format('m'), $value->format('d'), $value->format('Y') ) ) {
+    //   $valid = esc_html__('Start date must be a valid date.', 'zonda');
+    // }
 
     return $valid;
   }

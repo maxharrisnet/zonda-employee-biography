@@ -19,7 +19,6 @@
     wp_enqueue_style( 'zonda-employee-styles', $styles );
   }
 
-  require_once( plugin_dir_path( __FILE__ ) . 'helpers.php' );
   require_once( plugin_dir_path( __FILE__ ) . 'register.php' );
   require_once( plugin_dir_path( __FILE__ ) . 'admin.php' );
   require_once( plugin_dir_path( __FILE__ ) . 'shortcode.php' );
@@ -39,8 +38,5 @@
     unregister_post_type( 'zonda_employee' );
     flush_rewrite_rules();
   }
-
-  // TODO: Include ACF locally https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
-  // TODO: Enqueue conditionally according to shortcode presence in content
 
 ?>
