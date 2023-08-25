@@ -26,9 +26,19 @@ For the output of the shortcode, make sure it is used to display this informatio
 
 The plugin registers a custom post type: `zonda_employee` and a custom taxonomy: `zonda_division`. This taxonomy can be used to group employees by division. There are also custom columns in WordPress admin to reflect the custom meta fields.
 
-The plugin also registers a shortcode: `[zonda_employee]`. The output of the shortcode is a list of employees, or a single employee. The list of employees is displayed in a grid, with each employee being a card. The single employee is displayed in a card. The card displays the employee's name, position, division, and bio. The card also displays the employee's image, and the division's logo if it exists.
+The plugin also registers a shortcode: `[zonda_employee_biography]`. The output of the shortcode is a list of employees, or a single employee . The list of employees is displayed in a grid, with each employee being a card. The single employee is displayed in a card. The card displays the employee's name, position, division, and bio. The card also displays the employee's image, and the division's logo if it exists.
 
 Custom meta fields are adding using Advanced Custom Fields. This includes sanitization on the fields to ensure that the data is safe to save. Output is localized and escaped according to the expected data and context in which it is displayed.
+
+## Styling
+
+The styling is intentionally minimal, allowing the theme's styles to be applied to the output of the shortcode. Flexbox is used to create a responsive grid of "cards".
+
+## Usage
+
+- Display all employees: `[zonda_employee_biography]`
+- Display a single employee: `[zonda_employee_biography id="1384"]`
+- Display employees by division: `[zonda_employee_biography division="marketing"]`
 
 ## Testing
 
@@ -37,22 +47,21 @@ Custom meta fields are adding using Advanced Custom Fields. This includes saniti
 To take this plugin further, I would add the following features:
 
 - Have shortcode accept the slug of the division to display
-- Create archive and single templates for the custom post type and taxonomy
-- Save the Employee first and last name as the title and slug
-- More robust sanitization of the custom meta fields
 - Real localization
 - Use a CSS preprocessor to write Sass
 - Allow WEBP and SVG images
-- Better image output/sizing
+- Register and use a custom image size
 - Limit date ranges for the start_date field
 - Limit permissions for adding divisions
+- Add fields to Quick Edit
+- Better admin [columns](https://developer.wordpress.org/reference/hooks/manage_post_type_posts_columns/) with sorting
+- Better archive page
 - Consistency between array and object notation
-- Probably more function checks
-- Include ACF locally https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
-- Enqueue conditionally according to shortcode presence in content
-- Create a custom block for the Gutenberg editor
+- More function checks
+- [Include ACF locally](https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/)
+- Enqueue styles conditionally according to shortcode presence in content
 - Use OOP rather than functional programming/namespacing
-- Get me hired at Zonda so that I can buy a house
+- Create a custom block for the Gutenberg editor
 
 ---
 

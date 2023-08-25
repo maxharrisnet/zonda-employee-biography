@@ -1,15 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,600;1,600&family=Playfair+Display:ital,wght@0,400;1,500&display=swap');
-
-.zonda-employees-container {
-  border: 2px solid #111;
-  border-radius: 5px;
-  display: flex;
-  flex-flow: wrap;
-  justify-content: center;
-  gap: 5px;
-  padding: 30px 0;
-}
-
 .zonda-employees-container ul,
 .zonda-employees-container li {
   list-style: none;
@@ -18,67 +6,61 @@
 
 .card-container {
   display: flex;
-  align-items: start;
   flex-flow: row wrap;
-  justify-content: center;
-  gap: 5px;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1200px;
   padding: 0;
 }
 
 .card {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  color: #111;
   display: flex;
-  flex-flow: column;
-  flex: 1 1 30%;
-  font-family: "GT Walsheim", "Arimo", Helvetica Neue, Helvetica, Arial, sans-serif;
-  gap: 15px;
-  padding: 5px 10px 15px;
+  justify-content: start;
+  flex: 1;
 }
 
-.card header {
+@media (max-width: 767px) {
+  .card {
+    flex-basis: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    flex-basis: 50%; 
+  }
+}
+
+.card .bio-image {
+  height: auto;
+  max-width: 400px;
+  width: 100%;
+}
+
+.card .division-title-container {
   display: flex;
-  align-items: start;
-  gap: 15px;
+  flex-flow: row;
 }
 
-.profile-image {
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  height: 62px;
-  width: 62px;
+.card .division-image {
+  height: 30px;
+  margin-top: 0.5em;
+  margin-right: 0.5em;
+  width: 30px;
 }
 
-.card h3,
+.card h2,
 .card h4 {
-  font-weight: 600;
-  line-height: 1.3em;
   margin: 0;
 }
 
-.card h3 {
-  font-family: "Nib", 'Playfair Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 22px;
+.card a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  margin-top: 0.5em;
 }
 
-.card h4 {
-  color: #5e3ad8;
-  font-size: 16px;
-}
-
-details {
-  cursor: pointer;
-}
-
-details em {
-  font-family: "Nib", 'Playfair Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  line-height: 1.2em;
-  /* font-size: 14px; */
-}
-
-summary:hover {
+.card a:hover {
   text-decoration: underline;
 }

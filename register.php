@@ -1,4 +1,5 @@
 <?php
+  // Post Type
   add_action( 'init', 'zonda_register_post_type' );
   function zonda_register_post_type() {
     $labels = array(
@@ -17,13 +18,26 @@
       'labels' =>  $labels,
       'description' => esc_html__('A post type for collecting and displaying employee information.', 'zonda'),
       'public' => true,
-      'show_in_rest' => false, // Intentionally excluding sensitive employee information from the REST API
+      'rewrite' => array('slug' => 'employee'),
+      'has_archive' => 'employees',
+      'show_in_rest' => false, // Intentionally excluding possibly sensitive employee information from the REST API
       'supports' => array('custom_fields')
     );
 
     register_post_type( 'zonda_employee', $args );
   }
 
+  add_filter( 'archive_template', 'zonda_get_archive_template' ) ;
+  function zonda_get_archive_template( $archive_template ) {
+    global $post;
+    if ( is_post_type_archive ( 'zonda_employee' ) ) {
+      $archive_template = __DIR__ . '/' . 'archive-zonda-employee.php';
+    }
+    return $archive_template;
+  }
+
+
+  // Taxonomy
   add_action( 'init', 'zonda_register_taxonomy' );
   function zonda_register_taxonomy() {
     $labels = array(
@@ -49,6 +63,7 @@
     register_taxonomy( 'zonda_division', 'zonda_employee', $args );
   }
 
+  // Meta Fields
   add_action( 'acf/init', 'zonda_register_meta_fields' );
   if( function_exists('acf_add_local_field_group') ) {
     function zonda_register_meta_fields() {
@@ -158,11 +173,6 @@
           )
         )
       ));
-      /* TODO: change columns in admin screen -> first name, last name, division, position 
-      * https://www.smashingmagazine.com/2017/12/customizing-admin-columns-wordpress/
-      * https://developer.wordpress.org/reference/hooks/manage_post_type_posts_columns/
-      * https://pluginrepublic.com/add-acf-fields-to-admin-columns/
-      */
 
       acf_add_local_field_group(array (
         'key' => 'division_information',
@@ -201,7 +211,7 @@
     }
   }
 
-  // Validate name fields
+  // Validating fields
   add_filter('acf/validate_value/name=first_name', 'zonda_validate_text_field', 10, 4); 
   add_filter('acf/validate_value/name=last_name', 'zonda_validate_text_field', 10, 4); 
   function zonda_validate_text_field( $valid, $value, $field, $input ){
@@ -224,7 +234,7 @@
     return $valid;
   }
   
-  // Validate image fields
+  // Validating image fields
   add_filter('acf/validate_value/type=image', 'zonda_validate_image_field', 10, 4);
   function zonda_validate_image_field( $valid, $value, $field, $input ){
     if( !$valid ) {
@@ -244,9 +254,9 @@
     return $valid;
   }
 
-  // Validate bio textarea field
-  add_filter('acf/validate_value/name=bio', 'zonda_validate_textarea_field', 10, 4);
-  function zonda_validate_textarea_field( $valid, $value, $field, $input ){
+  // Validating bio textarea field
+  add_filter('acf/validate_value/name=bio', 'zonda_validate_bio_field', 10, 4);
+  function zonda_validate_bio_field( $valid, $value, $field, $input ){
     if( !$valid ) {
       return $valid;
     }
@@ -273,25 +283,56 @@
     return $valid;
   }
 
-  // Validate start date field
+  // Validating start date field
   add_filter('acf/validate_value/name=start_date', 'zonda_validate_date_field', 10, 4); 
   function zonda_validate_date_field( $valid, $value, $field, $input ){
     if( !$valid ) {
       return $valid;
     }
 
-    $value = DateTime::createFromFormat( 'm#d#Y', $value );
+    $value = DateTime::createFromFormat( 'Ymd', $value );
     $now = new DateTime();
 
     if ( $value > $now ) {
       $valid = esc_html__('Start date must be in the past.', 'zonda');
     }
-    
-    // if ( !wp_checkdate( $value->format('m'), $value->format('d'), $value->format('Y') ) ) {
-    //   $valid = esc_html__('Start date must be a valid date.', 'zonda');
-    // }
 
+    if ( !wp_checkdate( $value->format('m'), $value->format('d'), $value->format('Y'), $value ) ) {
+      $valid = esc_html__('Start date must be a valid date.', 'zonda');
+    }
+    
     return $valid;
+  }
+
+  add_filter('save_post', 'zonda_set_post_data', 10, 3);
+  function zonda_set_post_data( $post_id, $post, $update ) {
+    // Preventing infinite loop
+    remove_filter('save_post', __FUNCTION__ );
+
+    if ( $post->post_type != 'zonda_employee' ) {
+      return;
+    }
+
+    $first_name = get_field('first_name', $post_id);
+    $last_name = get_field('last_name', $post_id);
+    $title = $first_name . ' ' . $last_name;
+    $slug = $first_name . '-' . $last_name; // This could be a more robust slugify function, but works for most inputs
+    $image = wp_get_attachment_image_src( get_field('bio_image'), 'medium' );
+    $bio = get_field('bio', $post_id);
+
+    $content = '<div><img src="' . esc_url($image[0])  . '" alt="A photo of ' . esc_attr($title) . '" loading="lazy" style="max-width: 100%" />';
+    $content .= '<br>' . wp_kses_post($bio) .'</div>';
+    $content .= '<div><a href="' . esc_url( get_post_type_archive_link( 'zonda_employee' ) ) . '">Back to Employee Bios</a></div>';
+    
+    print_r($title);
+    wp_update_post(array(
+      'ID' => $post_id,
+      'post_title' => esc_html($title),
+      'post_name' => esc_url($slug),
+      'post_content' => wp_kses_post($content),
+    ));
+
+    add_filter('save_post', __FUNCTION__, 10, 3 );
   }
 
 ?>
