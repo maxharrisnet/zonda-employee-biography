@@ -26,9 +26,11 @@ For the output of the shortcode, make sure it is used to display this informatio
 
 The plugin registers a custom post type: `zonda_employee` and a custom taxonomy: `zonda_division`. This taxonomy can be used to group employees by division. There are also custom columns in WordPress admin to reflect the custom meta fields.
 
-The plugin also registers a shortcode: `[zonda_employee_biography]`. The output of the shortcode is a list of employees, or a single employee . The list of employees is displayed in a grid, with each employee being a card. The single employee is displayed in a card. The card displays the employee's name, position, division, and bio. The card also displays the employee's image, and the division's logo if it exists.
+The plugin also registers a shortcode: `[zonda_employee_biography]`. The output of the shortcode is a list of employees, or a single employee . The list of employees is displayed in a grid, with each employee being a card. The single employee is displayed in a card. The card displays the employee's name, position, division image and title, and a link to the bio.
 
-Custom meta fields are adding using Advanced Custom Fields. This includes sanitization on the fields to ensure that the data is safe to save. Output is localized and escaped according to the expected data and context in which it is displayed.
+Custom meta fields are added using Advanced Custom Fields. This includes sanitization on the fields to ensure that the data is safe to save. Output is localized and escaped according to the expected data and context in which it is displayed.
+
+There's a custom simple archive template and url, and the custom post type is setup to save the post name as the employee's name. This allows for a pretty permalink structure.
 
 ## Styling
 
@@ -37,10 +39,8 @@ The styling is intentionally minimal, allowing the theme's styles to be applied 
 ## Usage
 
 - Display all employees: `[zonda_employee_biography]`
-- Display a single employee: `[zonda_employee_biography id="1384"]`
-- Display employees by division: `[zonda_employee_biography division="marketing"]`
-
-## Testing
+- Display a single employee: `[zonda_employee_biography ids="1384"]`
+- Display multiple employees: `[zonda_employee_biography ids="1385,1386,1365"]`
 
 ## Extensibility
 

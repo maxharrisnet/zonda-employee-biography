@@ -1,20 +1,4 @@
 <?php
-
- function zonda_get_time_at_company() {
-    // Subtract the start date from today's date to get the duration at the company
-    $start_string = get_field('start_date');
-    $start = DateTime::createFromFormat( 'm#d#Y', $start_string );
-    $now = new DateTime();
-    $duration = $now->diff($start);
-    
-    // Only returns years if there are years, otherwise returns months
-    if( $duration->y == 0 ) {
-      return $duration->format( '%m months' );
-    } else {
-      return $duration->format( '%y years %m months' );
-    }
-  }
-
   add_action( 'init', 'zonda_register_shortcode' );
   function zonda_register_shortcode() {
     function zonda_employee_biography_template( $atts ) {

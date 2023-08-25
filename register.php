@@ -321,7 +321,8 @@
     $bio = get_field('bio', $post_id);
 
     $content = '<div><img src="' . esc_url($image[0])  . '" alt="A photo of ' . esc_attr($title) . '" loading="lazy" style="max-width: 100%" />';
-    $content .= '<br>' . wp_kses_post($bio) .'</div>';
+    $content .= '<br>' . wp_kses_post($bio) .'</div><br>';
+    $content .= '<em>' . $first_name . ' has been at the company for ' . esc_html__(zonda_get_time_at_company($post_id)) . '</em>';
     $content .= '<div><a href="' . esc_url( get_post_type_archive_link( 'zonda_employee' ) ) . '">Back to Employee Bios</a></div>';
     
     print_r($title);

@@ -19,6 +19,21 @@
     wp_enqueue_style( 'zonda-employee-styles', $styles );
   }
 
+  function zonda_get_time_at_company() {
+    // Subtract the start date from today's date to get the duration at the company
+    $start_string = get_field('start_date');
+    $start = DateTime::createFromFormat( 'm#d#Y', $start_string );
+    $now = new DateTime();
+    $duration = $now->diff($start);
+    
+    // Only returns years if there are years, otherwise returns months
+    if( $duration->y == 0 ) {
+      return $duration->format( '%m months' );
+    } else {
+      return $duration->format( '%y years %m months' );
+    }
+  }
+
   require_once( plugin_dir_path( __FILE__ ) . 'register.php' );
   require_once( plugin_dir_path( __FILE__ ) . 'admin.php' );
   require_once( plugin_dir_path( __FILE__ ) . 'shortcode.php' );
